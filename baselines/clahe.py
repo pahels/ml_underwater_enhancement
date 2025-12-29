@@ -2,11 +2,7 @@
 import numpy as np
 import cv2
 
-def clahe_lab_bgr(
-    img_bgr: np.ndarray,
-    clip_limit: float = 2.0,
-    tile_grid_size=(8, 8),
-) -> np.ndarray:
+def clahe_lab_bgr(img_bgr: np.ndarray, clip_limit: float = 2.0, tile_grid_size=(8, 8),) -> np.ndarray:
     """
     CLAHE applied to L channel in LAB color space. - Lightness (black-white), red-green, blue-yellow
     Input/Output: uint8 BGR image.
