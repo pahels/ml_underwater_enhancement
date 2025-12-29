@@ -51,14 +51,30 @@ class UIEBDataset(Dataset):
         raw_paths = sorted([p for p in self.raw_dir.iterdir()
                             if p.suffix.lower() in {'.jpg', '.jpeg', '.png'}])
 
-        gt_map = {p.stem: p for p in self.gt_dir.iterdir()
-                  if p.suffix.lower() in {'.jpg', '.jpeg', '.png'}}
+        import re
+
+        def _extract_id(stem: str) -> str | None:
+            m = re.search(r"\d+", stem)
+            return m.group(0) if m else None
+
+        gt_paths = [p for p in self.gt_dir.iterdir()
+                    if p.suffix.lower() in {'.jpg', '.jpeg', '.png'}]
+
+        gt_map = {}
+        for p in gt_paths:
+            k = _extract_id(p.stem)
+            if k is not None and k not in gt_map:
+                gt_map[k] = p
 
         pairs = []
         for rp in raw_paths:
-            gp = gt_map.get(rp.stem)
+            k = _extract_id(rp.stem)
+            if k is None:
+                continue
+            gp = gt_map.get(k)
             if gp is not None:
                 pairs.append((rp, gp))
+
 
         if not pairs:
             raise RuntimeError(
